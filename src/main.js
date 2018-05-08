@@ -571,6 +571,29 @@ exports.init = function (host, defaultOptions, defaultParams) {
     },
 
     /**
+     * Get jobs config in json
+     *
+     * @param {string} jobName
+     * @param {object|undefined} customParams is optional
+     * @param {function} callback
+     */
+    get_config_json: function (jobName, customParams, callback) {
+      [jobName, customParams, callback] = doArgs(arguments, ['string', ['object', {}], 'function']);
+
+      doRequest({
+        urlPattern: [JOB_CONFIG, jobName],
+        noparse: false
+      }, customParams, function (error, data) {
+        // Get only the XML response body
+        if (error) {
+          callback(error, data);
+        } else {
+          callback(null, data.body);
+        }
+      });
+    },
+
+    /**
      * Update a job config xml by passing it through your modifyFunction.
      *
      * @param {string} jobName
@@ -612,7 +635,7 @@ exports.init = function (host, defaultOptions, defaultParams) {
         urlPattern: [JOB_CONFIG, jobName],
         request: {
           body: jobConfig,
-          headers: { 'Content-Type': 'application/xml' }
+          headers: { 'Content-Type': 'application/json' }
         },
         noparse: true
       }, customParams, function (error, data) {
@@ -662,7 +685,7 @@ exports.init = function (host, defaultOptions, defaultParams) {
         urlPattern: [JOB_CREATE],
         request: {
           body: jobConfig,
-          headers: { 'Content-Type': 'application/xml' }
+          headers: { 'Content-Type': 'application/json' }
         },
         noparse: true
       }, customParams, function (error, data) {
